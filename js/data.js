@@ -277,6 +277,51 @@ const OCULTAS = [
   ["PESAJ", "Fiesta de la salida de Mitzráyim"], ["SUKOT", "Fiesta de las cabañas"], ["TANAJ", "Torá, Neviim y Ketuvim"]
 ];
 
+/* ---------- Aventura de la Torá (juego con muñequitos) ---------- */
+const AVENTURA = {
+  /* [nombre, color de ropa, tono de piel] */
+  munecos: [["Ari", "#e53935", "#f3c9a0"], ["Noa", "#8e24aa", "#e0a878"], ["Eli", "#1e88e5", "#c98d5e"],
+            ["Tali", "#43a047", "#f6d6b8"], ["Dan", "#f9a825", "#a86f45"], ["Yael", "#00897b", "#eab98c"]],
+  /* 8 etapas de 5 casillas: [emoji, nombre, color] */
+  etapas: [["🌳", "Gan Eden", "#43a047"], ["🌈", "La tevá de Nóaj", "#00897b"], ["⭐", "La promesa a Avraham", "#f9a825"],
+           ["🧥", "Yosef en Mitzráyim", "#8e24aa"], ["🌊", "Pésaj y el Yam Suf", "#d81b60"], ["⛰️", "El monte Sinaí", "#5e35b1"],
+           ["⛺", "El Mishkán y el desierto", "#ef6c00"], ["🍇", "La Tierra Prometida", "#1e88e5"]],
+  /* 40 casillas: [tipo, texto, pasos]
+     s salida · q pregunta · r reto · h historia (+1 estrella) · b bendición (avanza) · p prueba (retrocede) · f llegada */
+  casillas: [
+    ["s", "Adonai crea los cielos y la tierra. ¡Comienza el camino!"], ["q"], ["b", "Adonai vio que todo era muy bueno.", 2], ["r"],
+    ["h", "Adonai apartó el día séptimo: el Shabat."],
+    ["h", "Nóaj caminaba con Adonai y construyó la tevá."], ["q"], ["p", "La gente se burlaba de Nóaj y te distrajiste.", 1], ["r"],
+    ["b", "¡Aparece el arcoíris del pacto!", 2],
+    ["h", "Avraham creyó la promesa de Adonai."], ["q"], ["r"], ["b", "Adonai proveyó el carnero en el monte Moriyá.", 1], ["q"],
+    ["h", "Yosef recibió una túnica de muchos colores."], ["p", "Los hermanos tuvieron envidia.", 2], ["q"], ["r"],
+    ["b", "Yosef perdonó a sus hermanos.", 2],
+    ["h", "La sangre del cordero guardó cada casa en Pésaj."], ["q"], ["p", "El faraón endureció su corazón.", 1],
+    ["b", "¡Adonai abrió el Yam Suf!", 3], ["r"],
+    ["h", "Adonai entregó Su Torá en el Sinaí."], ["q"], ["p", "El pueblo hizo un becerro de oro.", 3], ["r"], ["q"],
+    ["h", "La gloria de Adonai llenó el Mishkán."], ["b", "Adonai da man del cielo cada mañana.", 1], ["q"],
+    ["p", "Diez espías tuvieron miedo de los gigantes.", 2], ["r"],
+    ["h", "Yehoshúa y Kalev confiaron en Adonai."], ["q"], ["r"], ["q"],
+    ["f", "¡Llegaste a la Tierra Prometida!"]
+  ],
+  retos: {
+    ninos: [
+      "Di el Shemá en voz alta.", "Nombra tres animales que entraron en la tevá.", "Canta una alabanza corta a Adonai.",
+      "Di tres cosas por las que das gracias a Adonai.", "Haz la mímica de Nóaj construyendo la tevá.",
+      "Dile una berajá a quien está a tu lado.", "Di qué día es el Shabat y qué te gusta hacer ese día.",
+      "Cuenta hasta siete y di qué hizo Adonai el día séptimo.", "Di el nombre del Mashíaj y qué significa.",
+      "Haz la mímica de Moshé abriendo el mar.", "Nombra dos personas de la Torá que obedecieron a Adonai."
+    ],
+    jovenes: [
+      "Recita un versículo de memoria.", "Nombra los cinco libros de la Torá en orden.", "Explica en 20 segundos qué es el Shabat.",
+      "Nombra al menos ocho de las doce tribus de Israel.", "Di qué significan Yeshúa, Mashíaj y Torá.",
+      "Explica cómo el cordero de Pésaj anuncia a Yeshúa.", "Nombra cinco Fiestas del Eterno.",
+      "Di tres de las Diez Palabras y cómo se viven hoy.", "Cuenta en 30 segundos la historia de Yosef.",
+      "Di una promesa de Adonai que te da ánimo y dónde está escrita.", "Explica por qué Yehoshúa y Kalev vieron distinto a los otros diez."
+    ]
+  }
+};
+
 /* ---------- Alef-Bet ---------- */
 /* [letra, nombre, sonido, palabra hebrea, cómo se dice, significado] */
 const ALEFBET = [

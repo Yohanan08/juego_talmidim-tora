@@ -169,6 +169,32 @@ body[data-zona="ninos"] .historia p { font-size: 1.2rem; }
 .teclado button { border: 0; border-radius: 10px; padding: 12px 0; font-weight: 800; background: var(--tarjeta); color: var(--tinta); box-shadow: var(--sombra); }
 .teclado button:disabled { opacity: .3; box-shadow: none; }
 
+/* Aventura */
+.tarjeta.destacada { background: linear-gradient(135deg, #00897b, #1e88e5); color: #fff; border-top: 0; margin-bottom: 14px; }
+.tarjeta.destacada small { color: #fff; opacity: .92; }
+.jugadores { display: grid; gap: 8px; }
+.jugador { display: flex; align-items: center; gap: 10px; margin: 0; background: var(--tarjeta); border-radius: 16px; padding: 8px 12px; box-shadow: var(--sombra); }
+.jugador input { flex: 1; min-width: 0; font: inherit; font-weight: 700; padding: 10px; border-radius: 12px; border: 2px solid var(--cielo); background: var(--fondo); color: var(--tinta); }
+.elige { border: 0; background: var(--cielo); border-radius: 14px; padding: 6px 10px; line-height: 0; }
+.muneco { vertical-align: middle; }
+.marcador { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.chipj { background: var(--tarjeta); border-radius: 99px; padding: 3px 10px 3px 4px; font-size: .82rem; font-weight: 700; box-shadow: var(--sombra); border: 2px solid transparent; }
+.chipj.turno { border-color: var(--oro); }
+.tablero { width: 100%; height: auto; background: var(--tarjeta); border-radius: var(--radio); box-shadow: var(--sombra); display: block; }
+.tablero .etapa { font-size: 11px; font-weight: 800; font-family: var(--fuente); }
+.tablero .num { font-size: 9px; font-weight: 800; fill: var(--suave); font-family: var(--fuente); }
+.ficha { transition: transform .26s ease-in-out; filter: drop-shadow(0 2px 2px rgba(0,0,0,.35)); }
+.mando { position: sticky; bottom: calc(76px + env(safe-area-inset-bottom)); margin-top: 12px; background: var(--tarjeta); border-radius: var(--radio);
+  padding: 12px 14px; box-shadow: 0 -2px 20px rgba(0, 30, 100, .25); border: 3px solid var(--oro); z-index: 5; }
+.mando .turno-de { margin: 0; font-size: 1.1rem; }
+.mando .acciones { margin: 8px 0 0; }
+.mando .acciones .btn { flex: 1 1 40%; text-align: center; }
+.mando .evento h3 { font-size: 1.12rem; margin: .1em 0 .3em; }
+.mando .evento p { margin: 0 0 .3em; }
+.dado .cara { font-size: 1.5rem; line-height: 0; vertical-align: -3px; }
+.podio { list-style: none; padding: 0; display: grid; gap: 8px; text-align: left; max-width: 340px; margin: 12px auto; }
+.podio li { background: var(--tarjeta); border-radius: 14px; padding: 8px 12px; box-shadow: var(--sombra); }
+
 /* Alef-Bet */
 .letras { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; direction: rtl; }
 .letra { direction: ltr; border: 0; background: var(--tarjeta); color: inherit; border-radius: 18px; padding: 10px 6px; box-shadow: var(--sombra); text-align: center; }

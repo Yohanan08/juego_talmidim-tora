@@ -47,6 +47,7 @@
         <q>${v.t}</q><cite>${v.r}</cite>
       </section>
       <section class="rejilla">
+        <a class="tarjeta" style="--c:#00897b" href="#/juego/aventura"><span class="ico">🗺️</span><strong>Aventura</strong><small>Tablero con muñequitos</small></a>
         <a class="tarjeta" style="--c:#1e88e5" href="#/historias"><span class="ico">📖</span><strong>Historias</strong><small>De Bereshit a Devarim</small></a>
         <a class="tarjeta" style="--c:#d81b60" href="#/juegos"><span class="ico">🎮</span><strong>Juegos</strong><small>Trivia, memoria y más</small></a>
         <a class="tarjeta" style="--c:#8e24aa" href="#/alefbet"><span class="ico">🔤</span><strong>Alef-Bet</strong><small>Letras y palabras</small></a>
@@ -105,6 +106,8 @@
     ];
     main.innerHTML = `<h1>Juegos ${esNino() ? "para niños" : "para jóvenes"}</h1>
       <p class="sub">Gana estrellas mientras aprendes. ${esNino() ? "" : "Aquí los retos son más exigentes."}</p>
+      <a class="tarjeta destacada" href="#/juego/aventura"><span class="ico">🗺️</span><strong>Aventura de la Torá</strong>
+        <small>Juego de tablero con muñequitos · 1 a 4 jugadores · de Gan Eden a la Tierra Prometida</small></a>
       <section class="rejilla ancha">${lista.join("")}</section>`;
   }
   const cabezaJuego = (t) => `<a class="volver" href="#/juegos">← Juegos</a><h1>${t}</h1>`;
@@ -465,6 +468,155 @@
     });
   }
 
+  /* ---------- Aventura de la Torá ---------- */
+  const esc = (t) => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const espera = (ms) => new Promise(r => setTimeout(r, ms));
+  const cuerpoMuneco = (m) => `<ellipse cx="0" cy="12" rx="10" ry="11" fill="${m[1]}" stroke="#13233f" stroke-width="1.5"/>
+    <circle cx="0" cy="-5" r="8" fill="${m[2]}" stroke="#13233f" stroke-width="1.5"/>
+    <path d="M-7.4,-8 A8,8 0 0 1 7.4,-8 Z" fill="${m[1]}" stroke="#13233f" stroke-width="1.2"/>
+    <circle cx="-3" cy="-4.5" r="1.1" fill="#13233f"/><circle cx="3" cy="-4.5" r="1.1" fill="#13233f"/>
+    <path d="M-3,-1 Q0,2 3,-1" fill="none" stroke="#13233f" stroke-width="1.2" stroke-linecap="round"/>`;
+  const muneco = (m, tam) => `<svg class="muneco" viewBox="-13 -16 26 41" width="${tam}" height="${tam * 1.55}" aria-hidden="true">${cuerpoMuneco(m)}</svg>`;
+
+  function aventura() {
+    const M = AVENTURA.munecos;
+    let n = guardado.get("av_n", 2);
+    let jug = [0, 1, 2, 3].map(k => ({ m: k, nombre: guardado.get("av_nom" + k, "") }));
+    function preparar() {
+      main.innerHTML = `${cabezaJuego("Aventura de la Torá")}
+        <section class="heroe"><h2>De Gan Eden a la Tierra Prometida</h2>
+          <p>Elige tu muñequito, lanza el dado y avanza por 8 etapas de la Torá. Hay preguntas, retos, bendiciones y pruebas.</p></section>
+        <h3>¿Cuántos juegan?</h3>
+        <p class="fila">${[1, 2, 3, 4].map(k => `<button class="btn ${k === n ? "oro" : "linea"} cuantos" data-k="${k}">${k}</button>`).join("")}</p>
+        <h3>Jugadores</h3>
+        <section class="jugadores">${jug.slice(0, n).map((j, k) => `<p class="jugador">
+          <button class="elige" data-k="${k}" aria-label="Cambiar muñequito">${muneco(M[j.m], 40)}</button>
+          <input data-k="${k}" maxlength="12" placeholder="${M[j.m][0]}" value="${esc(j.nombre)}" aria-label="Nombre del jugador ${k + 1}">
+        </p>`).join("")}</section>
+        <p class="sub">Toca el muñequito para cambiarlo. Zona actual: <strong>${esNino() ? "niños" : "jóvenes"}</strong> (las preguntas y retos cambian según la zona).</p>
+        <p class="fila"><button class="btn oro" id="jugar">¡A jugar!</button></p>`;
+      main.querySelectorAll(".cuantos").forEach(b => b.addEventListener("click", () => { n = +b.dataset.k; guardado.set("av_n", n); preparar(); }));
+      main.querySelectorAll(".jugador input").forEach(i => i.addEventListener("input", () => { jug[+i.dataset.k].nombre = i.value; guardado.set("av_nom" + i.dataset.k, i.value); }));
+      main.querySelectorAll(".elige").forEach(b => b.addEventListener("click", () => {
+        const k = +b.dataset.k, usados = jug.slice(0, n).filter((_, x) => x !== k).map(j => j.m);
+        do { jug[k].m = (jug[k].m + 1) % M.length; } while (usados.includes(jug[k].m));
+        preparar();
+      }));
+      $("#jugar").addEventListener("click", () => partida(jug.slice(0, n).map(j => ({ m: M[j.m], nombre: j.nombre.trim() || M[j.m][0], pos: 0, est: 0 }))));
+    }
+    // corrige muñequitos repetidos al cargar
+    jug.forEach((j, k) => { while (jug.slice(0, k).some(o => o.m === j.m)) j.m = (j.m + 1) % M.length; });
+    preparar();
+  }
+
+  function partida(J) {
+    const C = AVENTURA.casillas, E = AVENTURA.etapas, FIN = C.length - 1;
+    const AN = 72, AL = 92, W = 360, H = 8 * AL + 16;
+    const xy = (i) => { const r = Math.floor(i / 5), c = i % 5, col = r % 2 === 0 ? c : 4 - c; return [col * AN + AN / 2, r * AL + 58]; };
+    const ICO = { s: "🚩", q: "❓", r: "🎯", h: "📖", b: "✨", p: "⚠️", f: "🏁" };
+    const COL = { s: "#ffffff", q: "#dbe8ff", r: "#ffe9b0", h: "#ffffff", b: "#c9f2d6", p: "#ffd0d0", f: "#fff3b0" };
+    let turno = 0, ocupado = false;
+    const preguntas = mezclar(TRIVIA[zona]); let np = 0;
+    const retos = mezclar(AVENTURA.retos[zona]); let nr = 0;
+
+    const camino = C.map((_, i) => xy(i).join(",")).join(" ");
+    main.innerHTML = `<a class="volver" href="#/juegos">← Salir de la aventura</a>
+      <section class="marcador" id="marcador"></section>
+      <svg id="tablero" class="tablero" viewBox="0 0 ${W} ${H}" role="img" aria-label="Tablero de la aventura">
+        ${E.map((e, r) => `<rect x="2" y="${r * AL + 8}" width="${W - 4}" height="${AL - 6}" rx="14" fill="${e[2]}" opacity=".16"/>
+          <text x="10" y="${r * AL + 25}" class="etapa" fill="${e[2]}">${e[0]} ${r + 1}. ${e[1]}</text>`).join("")}
+        <polyline points="${camino}" fill="none" stroke="#9bb4e8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1 14"/>
+        ${C.map((c, i) => { const [x, y] = xy(i); return `<g><circle cx="${x}" cy="${y}" r="25" fill="${COL[c[0]]}" stroke="${E[Math.floor(i / 5)][2]}" stroke-width="3"/>
+          <text x="${x}" y="${y + 7}" text-anchor="middle" font-size="20">${ICO[c[0]]}</text>
+          <text x="${x + 19}" y="${y - 17}" text-anchor="middle" class="num">${i + 1}</text></g>`; }).join("")}
+        ${J.map((j, k) => `<g class="ficha" id="ficha${k}">${cuerpoMuneco(j.m)}</g>`).join("")}
+      </svg>
+      <section class="mando" id="mando"></section>`;
+
+    const viva = () => !!$("#tablero");
+    function colocar() {
+      J.forEach((j, k) => {
+        const [x, y] = xy(j.pos), juntos = J.filter(o => o.pos === j.pos).length > 1;
+        const dx = juntos ? [-11, 11, -11, 11][k] : 0, dy = juntos ? [-9, -9, 11, 11][k] : 0;
+        $("#ficha" + k).setAttribute("transform", `translate(${x + dx},${y + dy - 6}) scale(${juntos ? 0.8 : 1})`);
+      });
+    }
+    function marcador() {
+      $("#marcador").innerHTML = J.map((j, k) => `<span class="chipj ${k === turno ? "turno" : ""}">${muneco(j.m, 20)} ${esc(j.nombre)} · ${j.pos + 1} · ⭐${j.est}</span>`).join("");
+    }
+    async function mover(j, pasos) {
+      const dir = Math.sign(pasos);
+      for (let k = 0; k < Math.abs(pasos); k++) {
+        if (!viva()) return;
+        const nueva = j.pos + dir;
+        if (nueva < 0 || nueva > FIN) break;
+        j.pos = nueva; colocar(); marcador();
+        await espera(280);
+      }
+      const f = $("#ficha" + J.indexOf(j));
+      if (f && f.scrollIntoView) f.scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+    const hoja = (html, botones) => new Promise(res => {
+      if (!viva()) return;
+      $("#mando").innerHTML = `<section class="evento">${html}</section>
+        <p class="fila acciones">${botones.map((b, k) => `<button class="btn ${b[1] || ""}" data-k="${k}">${b[0]}</button>`).join("")}</p>`;
+      $("#mando").querySelectorAll(".acciones button").forEach(b => b.addEventListener("click", () => res(+b.dataset.k)));
+    });
+    function esperarDado() {
+      const j = J[turno];
+      marcador();
+      $("#mando").innerHTML = `<p class="turno-de">${muneco(j.m, 34)} <strong>Turno de ${esc(j.nombre)}</strong></p>
+        <p class="fila acciones"><button class="btn oro dado" id="dado">🎲 Lanzar el dado</button></p>`;
+      $("#dado").addEventListener("click", jugar);
+    }
+    async function terminar(ganador) {
+      const orden = J.slice().sort((a, b) => b.pos - a.pos || b.est - a.est);
+      const premio = ganador.est + 5; ganar(premio);
+      main.innerHTML = `${cabezaJuego("Aventura de la Torá")}<section class="final">
+        <p class="grande">🏁</p><h2>¡${esc(ganador.nombre)} llegó a la Tierra Prometida!</h2>
+        <ol class="podio">${orden.map(j => `<li>${muneco(j.m, 30)} <strong>${esc(j.nombre)}</strong> · casilla ${j.pos + 1} · ⭐ ${j.est}</li>`).join("")}</ol>
+        <p>Así como Yehoshúa hizo entrar al pueblo en la tierra, Yeshúa HaMashíaj nos hace entrar en las promesas de Adonai.</p>
+        <p>Ganaron ${premio} ⭐ para la app.</p>
+        <p class="fila" style="justify-content:center"><button class="btn oro" id="otra">Jugar otra vez</button></p></section>`;
+      $("#otra").addEventListener("click", aventura);
+    }
+    async function jugar() {
+      if (ocupado) return; ocupado = true;
+      const j = J[turno], caras = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
+      const d = 1 + Math.floor(Math.random() * 6), boton = $("#dado");
+      boton.disabled = true;
+      for (let k = 0; k < 7; k++) { if (!viva()) return; boton.textContent = caras[Math.floor(Math.random() * 6)]; await espera(80); }
+      boton.innerHTML = `<span class="cara">${caras[d - 1]}</span> ¡Sacaste ${d}!`;
+      await espera(500);
+      await mover(j, d);
+      if (!viva()) return;
+      const c = C[j.pos], etapa = E[Math.floor(j.pos / 5)];
+      const titulo = `<p class="sub">${etapa[0]} ${etapa[1]} · casilla ${j.pos + 1}</p>`;
+      if (c[0] === "f") return terminar(j);
+      if (c[0] === "h") { j.est++; await hoja(`${titulo}<h3>📖 ${c[1]}</h3><p>+1 ⭐ para ${esc(j.nombre)}</p>`, [["Seguir", "oro"]]); }
+      else if (c[0] === "b") { await hoja(`${titulo}<h3>✨ Bendición</h3><p>${c[1]} Avanza ${c[2]}.</p>`, [["¡Amén!", "oro"]]); await mover(j, c[2]); }
+      else if (c[0] === "p") { await hoja(`${titulo}<h3>⚠️ Prueba</h3><p>${c[1]} Retrocede ${c[2]}.</p>`, [["Entendido", ""]]); await mover(j, -c[2]); }
+      else if (c[0] === "r") {
+        const reto = retos[nr++ % retos.length];
+        const ok = await hoja(`${titulo}<h3>🎯 Reto para ${esc(j.nombre)}</h3><p>${reto}</p><p class="sub">Los demás deciden si lo logró.</p>`, [["¡Lo logró!", "oro"], ["Esta vez no", "linea"]]);
+        if (ok === 0) { j.est++; await mover(j, 1); }
+      } else if (c[0] === "q") {
+        const q = preguntas[np++ % preguntas.length], ops = mezclar(q.o);
+        const k = await hoja(`${titulo}<h3>❓ ${q.p}</h3>`, ops.map(o => [o, "linea"]));
+        const bien = ops[k] === q.o[0];
+        if (bien) j.est++;
+        await hoja(`${titulo}<h3>${bien ? "✅ ¡Correcto!" : "La respuesta es: " + q.o[0]}</h3>
+          <p>${q.r ? "📖 " + q.r + ". " : ""}${bien ? "+1 ⭐ y avanzas 1." : (esNino() ? "Te quedas en tu casilla." : "Retrocedes 1.")}</p>`, [["Seguir", "oro"]]);
+        if (bien) await mover(j, 1); else if (!esNino()) await mover(j, -1);
+      } else { await espera(300); }
+      if (!viva()) return;
+      if (j.pos >= FIN) return terminar(j);
+      turno = (turno + 1) % J.length; ocupado = false;
+      esperarDado();
+    }
+    colocar(); esperarDado();
+  }
+
   /* ---------- Alef-Bet ---------- */
   function alefbet() {
     main.innerHTML = `<h1>Alef-Bet</h1><p class="sub">Las 22 letras del hebreo. Se leen de derecha a izquierda. Toca una letra.</p>
@@ -550,7 +702,7 @@
     if (a === "historias") historias();
     else if (a === "historia") historia(b);
     else if (a === "juegos") juegos();
-    else if (a === "juego") ({ trivia, memoria, sopa, ordena, quien, versiculo, libro, oculta }[b] || juegos)();
+    else if (a === "juego") ({ trivia, memoria, sopa, ordena, quien, versiculo, libro, oculta, aventura }[b] || juegos)();
     else if (a === "alefbet") alefbet();
     else if (a === "parasha") parasha();
     else if (a === "mesa") mesa();
