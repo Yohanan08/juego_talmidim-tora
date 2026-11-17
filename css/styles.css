@@ -1,0 +1,187 @@
+/* Talmidim de la Torá — estilos */
+:root {
+  --azul: #0038b8;
+  --azul-oscuro: #06256e;
+  --cielo: #e9f1ff;
+  --oro: #f5b301;
+  --blanco: #ffffff;
+  --tinta: #13233f;
+  --suave: #5b6b86;
+  --ok: #1e9e5a;
+  --mal: #d93b3b;
+  --fondo: #f4f8ff;
+  --tarjeta: #ffffff;
+  --radio: 20px;
+  --sombra: 0 6px 18px rgba(0, 40, 130, .12);
+  --fuente: ui-rounded, "Nunito", "Quicksand", "Segoe UI", system-ui, sans-serif;
+  --hebreo: "SBL Hebrew", "Ezra SIL", "Noto Serif Hebrew", "Times New Roman", serif;
+}
+body[data-zona="jovenes"] {
+  --fondo: #0b1630;
+  --tarjeta: #14234a;
+  --tinta: #eef3ff;
+  --suave: #a9b8d8;
+  --cielo: #1c2f60;
+  --sombra: 0 6px 18px rgba(0, 0, 0, .35);
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; font-family: var(--fuente); color: var(--tinta); background: var(--fondo);
+  line-height: 1.55; font-size: 17px;
+  padding-bottom: calc(78px + env(safe-area-inset-bottom));
+}
+h1, h2, h3 { line-height: 1.2; margin: 0 0 .4em; }
+h1 { font-size: 1.7rem; } h2 { font-size: 1.3rem; } h3 { font-size: 1.08rem; }
+p { margin: 0 0 .8em; }
+a { color: inherit; }
+button { font: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--oro); outline-offset: 2px; }
+
+/* Barra superior */
+.barra {
+  position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; background: var(--azul); color: #fff;
+  border-bottom: 4px solid var(--oro);
+}
+.marca { display: flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 800; font-size: 1.1rem; margin-right: auto; }
+.marca-logo { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: #fff; color: var(--azul); font-size: 1.4rem; }
+.marca small { display: block; font-weight: 600; font-size: .72rem; opacity: .85; margin-top: -4px; }
+.estrellas { background: rgba(255,255,255,.18); padding: 4px 10px; border-radius: 99px; font-weight: 700; white-space: nowrap; }
+.zona-btn { border: 0; border-radius: 99px; padding: 7px 12px; background: var(--oro); color: #222; font-weight: 800; white-space: nowrap; }
+
+/* Contenido */
+main { max-width: 860px; margin: 0 auto; padding: 18px 14px 30px; outline: none; }
+.sub { color: var(--suave); margin-top: -.2em; }
+.volver { display: inline-block; margin-bottom: 12px; text-decoration: none; font-weight: 700; color: var(--suave); }
+
+.heroe {
+  background: linear-gradient(135deg, var(--azul), #2f6bff); color: #fff; border-radius: var(--radio);
+  padding: 22px 18px; box-shadow: var(--sombra); margin-bottom: 16px; position: relative; overflow: hidden;
+}
+.heroe::after { content: "✡"; position: absolute; right: -10px; bottom: -40px; font-size: 9rem; opacity: .12; }
+.heroe p { margin: 0; opacity: .95; }
+
+.verso { background: var(--tarjeta); border-left: 6px solid var(--oro); border-radius: 14px; padding: 14px 16px; box-shadow: var(--sombra); margin-bottom: 18px; }
+.verso q { font-size: 1.1rem; font-weight: 700; quotes: "«" "»"; }
+.verso cite { display: block; color: var(--suave); font-style: normal; font-size: .9rem; margin-top: 4px; }
+
+.rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.rejilla.ancha { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.tarjeta {
+  display: block; background: var(--tarjeta); border-radius: var(--radio); padding: 16px; text-decoration: none;
+  box-shadow: var(--sombra); border: 0; text-align: left; color: inherit; width: 100%;
+  border-top: 6px solid var(--c, var(--azul)); transition: transform .15s;
+}
+a.tarjeta:hover, button.tarjeta:hover { transform: translateY(-3px); }
+.tarjeta .ico { font-size: 2.2rem; display: block; margin-bottom: 4px; }
+.tarjeta strong { display: block; font-size: 1.05rem; }
+.tarjeta small { color: var(--suave); }
+
+.btn {
+  display: inline-block; border: 0; border-radius: 99px; padding: 11px 20px; font-weight: 800;
+  background: var(--azul); color: #fff; text-decoration: none; box-shadow: 0 4px 0 var(--azul-oscuro);
+}
+.btn:active { transform: translateY(3px); box-shadow: none; }
+.btn.oro { background: var(--oro); color: #222; box-shadow: 0 4px 0 #b88500; }
+.btn.linea { background: transparent; color: var(--tinta); box-shadow: inset 0 0 0 2px var(--suave); }
+.btn[disabled] { opacity: .5; cursor: default; }
+.fila { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 12px 0; }
+
+/* Historia */
+.historia { background: var(--tarjeta); border-radius: var(--radio); padding: 20px; box-shadow: var(--sombra); }
+.historia .emoji { font-size: 3.4rem; }
+.historia p { font-size: 1.1rem; }
+body[data-zona="ninos"] .historia p { font-size: 1.2rem; }
+.caja { border-radius: 16px; padding: 14px 16px; margin-top: 14px; }
+.caja.mashiaj { background: #fff6d6; color: #3a2c00; border: 2px solid var(--oro); }
+.caja.pregunta { background: var(--cielo); }
+.caja h3 { margin-bottom: .3em; }
+
+/* Trivia */
+.progreso { height: 10px; background: var(--cielo); border-radius: 99px; overflow: hidden; margin-bottom: 14px; }
+.progreso i { display: block; height: 100%; background: var(--oro); transition: width .3s; }
+.opciones { display: grid; gap: 10px; margin: 14px 0; }
+.opcion { border: 2px solid var(--cielo); background: var(--tarjeta); color: inherit; border-radius: 16px; padding: 14px; text-align: left; font-weight: 700; }
+.opcion.bien { background: var(--ok); border-color: var(--ok); color: #fff; }
+.opcion.error { background: var(--mal); border-color: var(--mal); color: #fff; }
+.final { text-align: center; padding: 24px 10px; }
+.final .grande { font-size: 4rem; }
+
+/* Memoria */
+.memoria { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 520px; margin: 0 auto; }
+.carta { aspect-ratio: 3/4; border: 0; border-radius: 14px; background: var(--azul); color: #fff; font-size: 1.9rem; font-weight: 800; display: grid; place-items: center; padding: 4px; box-shadow: var(--sombra); }
+.carta::before { content: "✡"; opacity: .6; }
+.carta.vista, .carta.lista { background: var(--tarjeta); color: var(--tinta); }
+.carta.vista::before, .carta.lista::before { content: none; }
+.carta.lista { outline: 3px solid var(--ok); }
+.carta .txt { font-size: .82rem; line-height: 1.15; }
+.carta .heb { font-family: var(--hebreo); font-size: 1.7rem; direction: rtl; }
+
+/* Sopa de letras */
+.sopa { display: grid; gap: 3px; max-width: 520px; margin: 0 auto; touch-action: manipulation; }
+.celda { aspect-ratio: 1; border: 0; border-radius: 8px; background: var(--tarjeta); color: var(--tinta); font-weight: 800; font-size: clamp(.8rem, 3.6vw, 1.15rem); padding: 0; }
+.celda.inicio { background: var(--oro); color: #222; }
+.celda.hallada { background: var(--ok); color: #fff; }
+.palabras { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 14px 0; padding: 0; list-style: none; }
+.palabras li { background: var(--cielo); padding: 4px 12px; border-radius: 99px; font-weight: 700; }
+.palabras li.ok { text-decoration: line-through; opacity: .55; }
+
+/* Ordena */
+.orden { list-style: none; padding: 0; margin: 14px 0; display: grid; gap: 8px; }
+.orden li { display: flex; align-items: center; gap: 8px; background: var(--tarjeta); border-radius: 14px; padding: 10px 12px; box-shadow: var(--sombra); font-weight: 700; }
+.orden li span { flex: 1; }
+.orden button { border: 0; background: var(--cielo); color: var(--tinta); border-radius: 10px; width: 38px; height: 38px; font-size: 1rem; }
+.orden li.bien { outline: 3px solid var(--ok); }
+.orden li.error { outline: 3px solid var(--mal); }
+.aviso { font-weight: 800; text-align: center; min-height: 1.6em; }
+
+/* ¿Quién soy? */
+.pasos { background: var(--tarjeta); border-radius: var(--radio); box-shadow: var(--sombra); padding: 16px 16px 16px 40px; display: grid; gap: 8px; font-size: 1.05rem; }
+.frente { min-height: calc(100vh - 190px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  background: linear-gradient(135deg, var(--azul), #2f6bff); color: #fff; border-radius: var(--radio); padding: 18px; box-shadow: var(--sombra); }
+.frente h1 { font-size: clamp(2.6rem, 13vw, 5rem); margin: .2em 0; }
+.frente .reloj { font-size: 1.6rem; font-weight: 800; background: var(--oro); color: #222; border-radius: 99px; padding: 2px 18px; margin: 0; }
+.frente .mimica { font-size: 1.15rem; max-width: 26ch; opacity: .95; }
+.frente .botones { justify-content: center; margin-top: 18px; }
+.frente .btn { font-size: 1.2rem; padding: 16px 26px; }
+.frente .btn.linea { color: #fff; box-shadow: inset 0 0 0 2px #fff; }
+
+/* Alef-Bet */
+.letras { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; direction: rtl; }
+.letra { direction: ltr; border: 0; background: var(--tarjeta); color: inherit; border-radius: 18px; padding: 10px 6px; box-shadow: var(--sombra); text-align: center; }
+.letra b { display: block; font-family: var(--hebreo); font-size: 2.8rem; line-height: 1.1; color: var(--azul); }
+body[data-zona="jovenes"] .letra b { color: var(--oro); }
+.letra.activa { outline: 3px solid var(--oro); }
+.detalle { background: var(--tarjeta); border-radius: var(--radio); padding: 18px; box-shadow: var(--sombra); margin: 14px 0; display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+.detalle .gran { font-family: var(--hebreo); font-size: 5.5rem; line-height: 1; color: var(--azul); }
+body[data-zona="jovenes"] .detalle .gran { color: var(--oro); }
+.texto-hebreo { font-family: var(--hebreo); direction: rtl; unicode-bidi: isolate; font-size: 1.9rem; }
+.glosario { display: grid; gap: 8px; margin: 0; }
+.glosario div { background: var(--tarjeta); border-radius: 14px; padding: 10px 14px; box-shadow: var(--sombra); }
+.glosario dt { font-weight: 800; color: var(--azul); }
+body[data-zona="jovenes"] .glosario dt { color: var(--oro); }
+.glosario dd { margin: 0; }
+
+/* Parashá */
+.parasha { background: var(--tarjeta); border-radius: var(--radio); padding: 20px; box-shadow: var(--sombra); border-top: 8px solid var(--azul); }
+.parasha .num { color: var(--suave); font-weight: 700; }
+select { font: inherit; padding: 10px; border-radius: 12px; border: 2px solid var(--cielo); background: var(--tarjeta); color: var(--tinta); max-width: 100%; }
+
+/* Menú inferior */
+.menu {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 10; display: flex; justify-content: space-around;
+  background: var(--tarjeta); box-shadow: 0 -4px 16px rgba(0, 30, 100, .15);
+  padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+}
+.menu a { flex: 1; text-align: center; text-decoration: none; font-size: .7rem; font-weight: 700; color: var(--suave); padding: 4px 0; border-radius: 12px; }
+.menu a span { display: block; font-size: 1.35rem; }
+.menu a.activo { color: var(--azul); background: var(--cielo); }
+body[data-zona="jovenes"] .menu a.activo { color: var(--oro); }
+
+footer.firma { text-align: center; color: var(--suave); font-size: .85rem; margin-top: 28px; }
+footer.firma a { color: var(--azul); font-weight: 700; }
+body[data-zona="jovenes"] footer.firma a { color: var(--oro); }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

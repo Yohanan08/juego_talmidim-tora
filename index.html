@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Talmidim de la Torá</title>
+  <meta name="description" content="Torá para niños y jóvenes: historias, juegos, Alef-Bet, parashá semanal y juegos de mesa para aprender en familia en el Mashíaj Yeshúa.">
+  <meta name="theme-color" content="#0038b8">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-zona="ninos">
+  <header class="barra">
+    <a class="marca" href="#/" aria-label="Inicio">
+      <span class="marca-logo" aria-hidden="true">✡</span>
+      <span class="marca-texto">Talmidim <small>de la Torá</small></span>
+    </a>
+    <span class="estrellas" id="estrellas" title="Estrellas ganadas">⭐ 0</span>
+    <button class="zona-btn" id="zonaBtn" type="button" aria-label="Cambiar de zona"></button>
+  </header>
+
+  <main id="contenido" tabindex="-1"></main>
+
+  <nav class="menu" aria-label="Secciones">
+    <a href="#/" data-ruta=""><span aria-hidden="true">🏠</span>Inicio</a>
+    <a href="#/historias" data-ruta="historias"><span aria-hidden="true">📖</span>Historias</a>
+    <a href="#/juegos" data-ruta="juegos"><span aria-hidden="true">🎮</span>Juegos</a>
+    <a href="#/alefbet" data-ruta="alefbet"><span aria-hidden="true">🔤</span>Alef-Bet</a>
+    <a href="#/parasha" data-ruta="parasha"><span aria-hidden="true">📜</span>Parashá</a>
+    <a href="#/mesa" data-ruta="mesa"><span aria-hidden="true">🎲</span>Familia</a>
+  </nav>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
