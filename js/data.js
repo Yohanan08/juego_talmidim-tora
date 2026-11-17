@@ -438,6 +438,28 @@ const RETOS = [
   "Hagan una tefilá en familia dando gracias por algo que aprendieron."
 ];
 
+/* ---------- Profecías del Mashíaj ---------- */
+/* [emoji, título, profecía, dónde está escrita, cumplimiento en Yeshúa, dónde se lee]
+   Este bloque es JSON: usa siempre comillas dobles. */
+const PROFECIAS = [
+  ["🌱", "La simiente de la mujer", "Un descendiente de la mujer aplastaría la cabeza de la serpiente.", "Bereshit 3:15", "Yeshúa nació de mujer y vino a deshacer las obras del adversario.", "Galatiyim 4:4"],
+  ["🦁", "De la tribu de Yehudá", "El cetro no se apartaría de Yehudá hasta que viniera Shiló.", "Bereshit 49:10", "Yeshúa nació de la tribu de Yehudá.", "Ivrim 7:14"],
+  ["🌟", "La estrella de Yaakov", "Saldría una estrella de Yaakov y se levantaría un cetro de Israel.", "Bemidbar 24:17", "Unos sabios del oriente vieron Su estrella y vinieron a honrar al Rey.", "Mattityahu 2:2"],
+  ["📜", "Un profeta como Moshé", "Adonai levantaría de entre el pueblo un profeta como Moshé; a Él había que escuchar.", "Devarim 18:15", "Kefa anunció que ese profeta es Yeshúa.", "Maasé HaShlijim 3:22"],
+  ["👑", "Hijo de David", "Un descendiente de David tendría un trono firme para siempre.", "Shemuel Bet 7:12-13", "A Yeshúa se le da el trono de David, y Su reino no tendrá fin.", "Luqas 1:32-33"],
+  ["🏘️", "Nacido en Bet-Léjem", "De Bet-Léjem, la pequeña, saldría el que gobernará a Israel.", "Mijá 5:1", "Yeshúa nació en Bet-Léjem de Yehudá.", "Mattityahu 2:1"],
+  ["👶", "Imanu-El", "Una joven virgen daría a luz un hijo, y lo llamarían Imanu-El: «Elohim con nosotros».", "Yeshayahu 7:14", "Miryam concibió por el Ruach HaKodesh y dio a luz a Yeshúa.", "Mattityahu 1:22-23"],
+  ["🫏", "El Rey sobre un asno", "El Rey vendría a Yerushaláyim justo y humilde, montado en un asno.", "Zejaryá 9:9", "Yeshúa entró en Yerushaláyim montado en un asno, y el pueblo lo aclamó.", "Mattityahu 21:5-9"],
+  ["🪙", "Treinta piezas de plata", "Pesaron por salario treinta piezas de plata, y fueron echadas en la Casa de Adonai.", "Zejaryá 11:12-13", "Yeshúa fue entregado por treinta piezas de plata.", "Mattityahu 26:15"],
+  ["💔", "Herido por nosotros", "El Siervo sería traspasado por nuestras transgresiones, y por Su herida seríamos sanados.", "Yeshayahu 53:5", "Yeshúa llevó nuestros pecados en Su cuerpo sobre el madero.", "Kefa Alef 2:24"],
+  ["✋", "Manos y pies traspasados", "Traspasarían Sus manos y Sus pies, y echarían suertes sobre Su ropa.", "Tehilim 22:17-19", "Los soldados echaron suertes sobre la túnica de Yeshúa junto al madero.", "Yojanán 19:23-24"],
+  ["🐑", "Ningún hueso quebrado", "Al cordero de Pésaj no se le quebraría ningún hueso.", "Shemot 12:46", "A Yeshúa, nuestro Cordero de Pésaj, no le quebraron ningún hueso.", "Yojanán 19:36"],
+  ["🌅", "No vería corrupción", "Adonai no dejaría que Su Apartado viera corrupción.", "Tehilim 16:10", "Yeshúa resucitó; Su cuerpo no vio corrupción.", "Maasé HaShlijim 2:31"],
+  ["🕊️", "Kohen para siempre", "El Mashíaj sería kohen para siempre, según el orden de Malki-Tzédek.", "Tehilim 110:4", "Yeshúa es nuestro Kohen Gadol para siempre.", "Ivrim 7:17"],
+  ["❤️", "El pacto renovado", "Adonai haría un pacto renovado y escribiría Su Torá en el corazón.", "Yirmeyahu 31:31-33", "Yeshúa dijo: «Esta copa es el pacto renovado en mi sangre».", "Luqas 22:20"],
+  ["☁️", "Viene con las nubes", "Uno como Hijo de Hombre vendría con las nubes del cielo, y Su reino no pasará.", "Daniel 7:13-14", "Yeshúa anunció que lo verán venir en las nubes del cielo. ¡Lo esperamos!", "Mattityahu 26:64"]
+];
+
 /* ---------- Juegos de mesa para imprimir ---------- */
 const MESA = [
   {
@@ -459,6 +481,11 @@ const MESA = [
     titulo: "¿Quién soy? Mímica de personajes", emoji: "🎭", edad: "5+ · 3 o más jugadores",
     desc: "28 cartas para ponerse en la frente: los demás hacen la mímica y tú adivinas el personaje.",
     archivo: "juegos-de-mesa/quien-soy-mimica.pdf"
+  },
+  {
+    titulo: "Profecías del Mashíaj", emoji: "📜", edad: "8+ · 2 a 6 jugadores",
+    desc: "32 cartas: 16 profecías del Tanaj y sus 16 cumplimientos en Yeshúa. Tres formas de jugar.",
+    archivo: "juegos-de-mesa/profecias-del-mashiaj.pdf"
   },
   /* Cuando tengas los PDF, colócalos en la carpeta juegos-de-mesa/ y escribe aquí el nombre del archivo */
   { titulo: "Los Guardianes del Pacto", emoji: "🛡️", edad: "Juego del ministerio", desc: "Juego de mesa bíblico del ministerio.", archivo: null },

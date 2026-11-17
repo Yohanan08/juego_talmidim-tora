@@ -51,7 +51,8 @@
         <a class="tarjeta" style="--c:#1e88e5" href="#/historias"><span class="ico">📖</span><strong>Historias</strong><small>De Bereshit a Devarim</small></a>
         <a class="tarjeta" style="--c:#d81b60" href="#/juegos"><span class="ico">🎮</span><strong>Juegos</strong><small>Trivia, memoria y más</small></a>
         <a class="tarjeta" style="--c:#8e24aa" href="#/alefbet"><span class="ico">🔤</span><strong>Alef-Bet</strong><small>Letras y palabras</small></a>
-        <a class="tarjeta" style="--c:#f9a825" href="#/parasha"><span class="ico">📜</span><strong>Parashá</strong><small>La porción de la semana</small></a>
+        <a class="tarjeta" style="--c:#f9a825" href="#/parasha"><span class="ico">🕎</span><strong>Parashá</strong><small>La porción de la semana</small></a>
+        <a class="tarjeta" style="--c:#5e35b1" href="#/profecias"><span class="ico">📜</span><strong>Profecías</strong><small>El Mashíaj anunciado</small></a>
         <a class="tarjeta" style="--c:#43a047" href="#/mesa"><span class="ico">🎲</span><strong>En familia</strong><small>Juegos de mesa para imprimir</small></a>
       </section>
       <p class="sub" style="margin-top:16px">Estás en la zona de <strong>${esNino() ? "niños" : "jóvenes"}</strong>. Cámbiala con el botón dorado de arriba.</p>
@@ -642,38 +643,237 @@
     if (i < 0) i = PARASHOT.findIndex(p => t.startsWith(p[0] + "-")); // parashot dobles
     return i;
   }
-  function parasha() {
+  const plus = (i) => (typeof BERESHIT_PLUS !== "undefined" && BERESHIT_PLUS[i]) || null;
+  const colores = (t) => t.replace(/\[(\d)\]/g, '<b class="k$1">').replace(/\[\/\]/g, "</b>");
+  const pdfParasha = (i) => `parashot/bereshit-${String(i + 1).padStart(2, "0")}.pdf`;
+  let parashaAuto = false;
+
+  function parasha(sub) {
+    if (sub === "colorear") return colorear();
+    if (sub === "rompe") return rompe();
     let actual = guardado.get("parasha", 0);
     let nota = "";
     function pinta() {
-      const p = PARASHOT[actual];
-      main.innerHTML = `<h1>Parashá de la semana</h1><p class="sub" id="nota">${nota}</p>
-        <article class="parasha">
+      const p = PARASHOT[actual], x = plus(actual);
+      const selector = `<p class="fila"><label for="sel"><strong>Ver otra:</strong></label>
+          <select id="sel">${PARASHOT.map((y, i) => `<option value="${i}" ${i === actual ? "selected" : ""}>${i + 1}. ${y[1]}${plus(i) ? " 🎨" : ""}</option>`).join("")}</select></p>`;
+      const cabeza = `<h1>Parashá de la semana</h1><p class="sub" id="nota">${nota}</p>`;
+      let cuerpo;
+      if (!x) {
+        cuerpo = `<article class="parasha">
           <p class="num">Parashá ${actual + 1} de 54</p>
           <h2 style="font-size:1.7rem">${p[1]}</h2>
           <p class="sub">«${p[2]}» · ${p[3]}</p>
           <p style="font-size:1.15rem">${p[4]}</p>
           <section class="caja pregunta"><h3>💬 Pregunta</h3><p>${p[5]}</p></section>
           <section class="caja mashiaj"><h3>👨‍👩‍👧‍👦 Reto familiar</h3><p>${RETOS[actual % RETOS.length]}</p></section>
-        </article>
-        <p class="fila"><label for="sel"><strong>Ver otra:</strong></label>
-          <select id="sel">${PARASHOT.map((x, i) => `<option value="${i}" ${i === actual ? "selected" : ""}>${i + 1}. ${x[1]}</option>`).join("")}</select></p>`;
-      $("#sel").addEventListener("change", (e) => { actual = +e.target.value; nota = "Elegida por ti."; pinta(); });
+          <p class="sub" style="margin-top:12px">Las parashot marcadas con 🎨 (Bereshit, 1 a 12) ya tienen historia larga, dibujo para colorear, rompecabezas y hoja para imprimir. Los demás libros vienen en camino.</p>
+        </article>`;
+      } else if (esNino()) {
+        cuerpo = `<article class="parasha">
+          <p class="num">Parashá ${actual + 1} de 54 · ${p[3]}</p>
+          <h2 style="font-size:1.8rem">${p[1]} <small class="sub">«${p[2]}»</small></h2>
+          ${dibujoSVG(actual)}
+          <section class="cuento">${x.n.map(t => `<p>${colores(t)}</p>`).join("")}</section>
+          <section class="palabra"><span class="texto-hebreo" lang="he">${x.pal[0]}</span><p><strong>${x.pal[1]}</strong> significa <strong>${x.pal[2]}</strong><br><small>Palabra de la parashá</small></p></section>
+          <section class="verso"><small>Para memorizar</small><br><q>${x.frase.split(" — ")[0]}</q><cite>${x.frase.split(" — ")[1] || ""}</cite></section>
+          <p class="fila">
+            <a class="btn oro" href="#/parasha/colorear">🎨 Colorear</a>
+            <a class="btn" href="#/parasha/rompe">🧩 Rompecabezas</a>
+            <a class="btn linea" href="${pdfParasha(actual)}" download>⬇ Hojas para imprimir</a></p>
+          <section class="caja pregunta"><h3>💬 Para conversar</h3><ul>${x.pn.map(q => `<li>${q}</li>`).join("")}</ul></section>
+          <section class="caja mashiaj"><h3>✨ El Mashíaj en la parashá</h3><p>${x.m}</p></section>
+        </article>`;
+      } else {
+        cuerpo = `<article class="parasha">
+          <p class="num">Parashá ${actual + 1} de 54 · ${p[3]}</p>
+          <h2 style="font-size:1.8rem">${p[1]} <small class="sub">«${p[2]}»</small></h2>
+          <p style="font-size:1.1rem">${p[4]}</p>
+          <h3>🔎 Tres ideas para profundizar</h3>
+          <ol class="ideas">${x.j.map(t => `<li>${t}</li>`).join("")}</ol>
+          <section class="caja mashiaj"><h3>✨ El Mashíaj en la parashá</h3><p>${x.m}</p></section>
+          <section class="palabra"><span class="texto-hebreo" lang="he">${x.pal[0]}</span><p><strong>${x.pal[1]}</strong> significa <strong>${x.pal[2]}</strong><br><small>${x.frase}</small></p></section>
+          <h3>🧠 Ponte a prueba</h3>
+          <section id="prueba">${x.q.map((q, n) => `<section class="miniq" data-n="${n}"><p><strong>${n + 1}. ${q[0]}</strong></p>
+            <p class="opciones">${mezclar(q[1]).map(o => `<button class="opcion">${o}</button>`).join("")}</p><p class="aviso"></p></section>`).join("")}</section>
+          <section class="caja pregunta"><h3>🎯 Reto de la semana</h3><p>${x.reto}</p></section>
+          <p class="fila">
+            <a class="btn" href="#/parasha/rompe">🧩 Rompecabezas difícil</a>
+            <a class="btn linea" href="${pdfParasha(actual)}" download>⬇ Hoja de estudio (PDF)</a></p>
+        </article>`;
+      }
+      main.innerHTML = cabeza + cuerpo + selector;
+      $("#sel").addEventListener("change", (e) => { actual = +e.target.value; guardado.set("parasha", actual); nota = "Elegida por ti."; pinta(); window.scrollTo(0, 0); });
+      main.querySelectorAll(".miniq").forEach(sec => sec.querySelectorAll(".opcion").forEach(b => b.addEventListener("click", () => {
+        if (sec.dataset.hecha) return; sec.dataset.hecha = "1";
+        const q = x.q[+sec.dataset.n], bien = b.textContent === q[1][0];
+        sec.querySelectorAll(".opcion").forEach(o => { if (o.textContent === q[1][0]) o.classList.add("bien"); else if (o === b) o.classList.add("error"); });
+        sec.querySelector(".aviso").textContent = (bien ? "¡Correcto! +1 ⭐ " : "") + "📖 " + q[2];
+        if (bien) ganar(1);
+      })));
     }
     pinta();
-    // Con internet, consulta la parashá de esta semana según Yerushaláyim (Hebcal)
-    if (navigator.onLine && window.fetch) {
+    // Con internet, una vez por sesión, consulta la parashá de esta semana según Yerushaláyim (Hebcal)
+    if (!parashaAuto && navigator.onLine && window.fetch) {
       fetch("https://www.hebcal.com/shabbat?cfg=json&geonameid=281184&M=on")
         .then(r => r.json())
         .then(d => {
-          const it = (d.items || []).find(x => x.category === "parashat");
+          const it = (d.items || []).find(y => y.category === "parashat");
           const i = it ? buscarParasha(it.title) : -1;
-          if (i >= 0 && location.hash.indexOf("parasha") > -1) {
+          parashaAuto = true;
+          if (i >= 0 && /^#\/parasha\/?$/.test(location.hash)) {
             actual = i; guardado.set("parasha", i);
             nota = "Lectura de esta semana según Yerushaláyim."; pinta();
           }
-        }).catch(() => { nota = "Sin conexión: puedes elegir la parashá abajo."; if (location.hash.indexOf("parasha") > -1) pinta(); });
-    } else { nota = "Sin conexión: se muestra la última guardada. Puedes elegir otra abajo."; pinta(); }
+        }).catch(() => { nota = "Sin conexión: puedes elegir la parashá abajo."; if (/^#\/parasha\/?$/.test(location.hash)) pinta(); });
+    }
+  }
+
+  /* ---------- Colorear ---------- */
+  function colorear() {
+    const i = guardado.get("parasha", 0);
+    if (!plus(i)) { location.hash = "#/parasha"; return; }
+    const PALETA = ["#e53935", "#fb8c00", "#fdd835", "#7cb342", "#2e7d32", "#4fc3f7", "#1e3a8a", "#8e24aa", "#f48fb1", "#8d6e63", "#f6c85f", "#bdbdbd", "#263238", "#ffffff"];
+    let color = PALETA[0], ejemplo = false;
+    let pintado = guardado.get("color_" + i, null);
+    main.innerHTML = `<a class="volver" href="#/parasha">← ${PARASHOT[i][1]}</a>
+      <h1>🎨 Colorea: ${PARASHOT[i][1]}</h1>
+      <p class="sub">Elige un color y toca cada parte del dibujo. Se guarda solo.</p>
+      <section class="lienzo">${dibujoSVG(i)}</section>
+      <section class="paleta">${PALETA.map((c, k) => `<button class="tinta ${k === 0 ? "activa" : ""}" data-c="${c}" style="background:${c}" aria-label="Color ${k + 1}"></button>`).join("")}</section>
+      <p class="fila"><button class="btn linea" id="borrar">🧽 Borrar todo</button><button class="btn linea" id="ejemplo">👀 Ver ejemplo</button>
+        <a class="btn" href="${pdfParasha(i)}" download>⬇ Imprimir para colorear</a></p>
+      <p class="aviso" id="aviso" aria-live="polite"></p>`;
+    const formas = Array.from(main.querySelectorAll(".dibujo .p"));
+    if (!pintado || pintado.length !== formas.length) pintado = formas.map(() => "#ffffff");
+    const aplicar = () => formas.forEach((s, k) => s.setAttribute("fill", ejemplo ? s.dataset.o : pintado[k]));
+    formas.forEach((s, k) => {
+      s.dataset.o = s.getAttribute("fill");
+      s.addEventListener("click", () => {
+        if (ejemplo) return;
+        pintado[k] = color; s.setAttribute("fill", color); guardado.set("color_" + i, pintado);
+        const hechas = pintado.filter(c => c !== "#ffffff").length;
+        if (hechas >= formas.length * 0.7 && !guardado.get("colorlisto_" + i, false)) {
+          guardado.set("colorlisto_" + i, true); ganar(3); $("#aviso").textContent = "🎉 ¡Qué hermoso te quedó! +3 ⭐";
+        }
+      });
+    });
+    aplicar();
+    main.querySelectorAll(".tinta").forEach(b => b.addEventListener("click", () => {
+      color = b.dataset.c; main.querySelectorAll(".tinta").forEach(t => t.classList.toggle("activa", t === b));
+    }));
+    $("#borrar").addEventListener("click", () => { pintado = formas.map(() => "#ffffff"); guardado.set("color_" + i, pintado); ejemplo = false; $("#ejemplo").textContent = "👀 Ver ejemplo"; aplicar(); });
+    $("#ejemplo").addEventListener("click", (e) => { ejemplo = !ejemplo; e.target.textContent = ejemplo ? "✏️ Volver a mi dibujo" : "👀 Ver ejemplo"; aplicar(); });
+  }
+
+  /* ---------- Rompecabezas ---------- */
+  function rompe() {
+    const i = guardado.get("parasha", 0);
+    if (!plus(i)) { location.hash = "#/parasha"; return; }
+    const N = esNino() ? 3 : 4, total = N * N, w = 400 / N, h = 300 / N;
+    let orden = mezclar([...Array(total).keys()]);
+    while (orden.every((v, k) => v === k)) orden = mezclar(orden);
+    let elegido = -1, movs = 0, listo = false;
+    const pieza = (v) => `<svg viewBox="${(v % N) * w} ${Math.floor(v / N) * h} ${w} ${h}" preserveAspectRatio="none"><g stroke="#13233f" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">${DIBUJOS[i]}</g></svg>`;
+    function pinta() {
+      main.innerHTML = `<a class="volver" href="#/parasha">← ${PARASHOT[i][1]}</a>
+        <h1>🧩 Rompecabezas: ${PARASHOT[i][1]}</h1>
+        <p class="sub">${listo ? "" : `Toca dos piezas para cambiarlas de lugar. ${total} piezas · ${movs} movimientos`}</p>
+        <section class="rompe ${listo ? "listo" : ""}" style="grid-template-columns:repeat(${N},1fr)">${orden.map((v, k) =>
+          `<button class="pieza ${k === elegido ? "elegida" : ""} ${v === k ? "ensitio" : ""}" data-k="${k}" aria-label="Pieza ${k + 1}">${pieza(v)}</button>`).join("")}</section>
+        <p class="aviso" aria-live="polite">${listo ? `🎉 ¡Lo armaste en ${movs} movimientos! +${N === 3 ? 3 : 5} ⭐` : ""}</p>
+        <p class="fila">${listo ? '<button class="btn oro" id="otra">Armar otra vez</button>' : ""}
+          <a class="btn linea" href="${pdfParasha(i)}" download>⬇ Rompecabezas para recortar</a></p>`;
+      if (listo) return $("#otra").addEventListener("click", rompe);
+      main.querySelectorAll(".pieza").forEach(b => b.addEventListener("click", () => {
+        const k = +b.dataset.k;
+        if (elegido < 0) { elegido = k; return pinta(); }
+        if (elegido !== k) { [orden[elegido], orden[k]] = [orden[k], orden[elegido]]; movs++; }
+        elegido = -1;
+        if (orden.every((v, n) => v === n)) { listo = true; ganar(N === 3 ? 3 : 5); }
+        pinta();
+      }));
+    }
+    pinta();
+  }
+
+  /* ---------- Profecías del Mashíaj ---------- */
+  function profecias(sub) {
+    if (sub === "une") return unir();
+    if (sub === "ref") return refs();
+    main.innerHTML = `<h1>Profecías del Mashíaj</h1>
+      <p class="sub">Siglos antes, el Tanaj anunció al Mashíaj. Toca cada profecía para descubrir cómo se cumplió en Yeshúa.</p>
+      <p class="fila"><a class="btn oro" href="#/profecias/une">🔗 Juego: une las parejas</a>
+        ${esNino() ? "" : '<a class="btn" href="#/profecias/ref">📍 Juego: ¿dónde está escrito?</a>'}</p>
+      <section class="profes">${PROFECIAS.map((p, i) => `<details class="profe">
+        <summary><span class="ico">${p[0]}</span><span><strong>${i + 1}. ${p[1]}</strong><small>${p[3]}</small></span></summary>
+        <p><b>📜 Profecía:</b> ${p[2]}</p>
+        <p class="cumple"><b>✨ Cumplimiento:</b> ${p[4]} <small>(${p[5]})</small></p></details>`).join("")}</section>
+      <p class="sub">También hay un juego de cartas de las profecías para imprimir en la sección <a href="#/mesa">Familia</a>.</p>
+      ${firma()}`;
+    main.querySelectorAll(".profe").forEach((d, i) => d.addEventListener("toggle", () => {
+      if (d.open && !guardado.get("profe_" + i, false)) { guardado.set("profe_" + i, true); ganar(1); }
+    }));
+  }
+
+  function unir() {
+    const n = esNino() ? 3 : 5;
+    const izq = mezclar(PROFECIAS.map((_, i) => i)).slice(0, n), der = mezclar(izq);
+    const hechas = new Set(); let sel = -1, fallos = 0;
+    function pinta(msg) {
+      const fin = hechas.size === n;
+      main.innerHTML = `<a class="volver" href="#/profecias">← Profecías</a><h1>🔗 Une las parejas</h1>
+        <p class="sub">Toca una profecía (azul) y luego su cumplimiento (dorado).</p>
+        <section class="une">
+          <section>${izq.map(i => `<button class="par izq ${hechas.has(i) ? "hecha" : ""} ${sel === i ? "elegida" : ""}" data-i="${i}">${PROFECIAS[i][0]} ${PROFECIAS[i][2]}<small>${PROFECIAS[i][3]}</small></button>`).join("")}</section>
+          <section>${der.map(i => `<button class="par der ${hechas.has(i) ? "hecha" : ""}" data-i="${i}">${PROFECIAS[i][4]}<small>${PROFECIAS[i][5]}</small></button>`).join("")}</section>
+        </section>
+        <p class="aviso" aria-live="polite">${fin ? `🎉 ¡Todas unidas! +${n} ⭐` : (msg || "")}</p>
+        ${fin ? '<p class="fila"><button class="btn oro" id="otra">Otras profecías</button></p>' : ""}`;
+      if (fin) return $("#otra").addEventListener("click", unir);
+      main.querySelectorAll(".par.izq").forEach(b => b.addEventListener("click", () => { if (!hechas.has(+b.dataset.i)) { sel = +b.dataset.i; pinta(); } }));
+      main.querySelectorAll(".par.der").forEach(b => b.addEventListener("click", () => {
+        const i = +b.dataset.i;
+        if (hechas.has(i)) return;
+        if (sel < 0) return pinta("Primero toca una profecía azul.");
+        if (sel === i) { hechas.add(i); sel = -1; if (hechas.size === n) ganar(n); return pinta("✅ ¡Así se cumplió!"); }
+        fallos++; pinta("Esa no es su pareja. Lee de nuevo e intenta otra vez.");
+      }));
+    }
+    pinta();
+  }
+
+  function refs() {
+    const qs = mezclar(PROFECIAS.map((_, i) => i)).slice(0, 8);
+    let k = 0, puntos = 0;
+    function pinta() {
+      if (k >= qs.length) {
+        ganar(puntos);
+        main.innerHTML = `<a class="volver" href="#/profecias">← Profecías</a><h1>📍 ¿Dónde está escrito?</h1><section class="final">
+          <p class="grande">${puntos >= 6 ? "🏆" : "📖"}</p><h2>${puntos} de ${qs.length}</h2><p>Ganaste ${puntos} ⭐</p>
+          <p class="fila" style="justify-content:center"><button class="btn" id="otra">Jugar otra vez</button></p></section>`;
+        return $("#otra").addEventListener("click", refs);
+      }
+      const p = PROFECIAS[qs[k]];
+      const otras = mezclar(PROFECIAS.filter(x => x[3] !== p[3]).map(x => x[3])).slice(0, 2);
+      const ops = mezclar([p[3], ...otras]);
+      main.innerHTML = `<a class="volver" href="#/profecias">← Profecías</a><h1>📍 ¿Dónde está escrito?</h1>
+        <p class="progreso"><i style="width:${(k / qs.length) * 100}%"></i></p>
+        <p class="sub">Profecía ${k + 1} de ${qs.length}</p><h2 id="profq">${p[0]} ${p[2]}</h2>
+        <section class="opciones">${ops.map(o => `<button class="opcion">${o}</button>`).join("")}</section>
+        <p class="aviso" id="aviso" aria-live="polite"></p>`;
+      let hecha = false;
+      main.querySelectorAll(".opcion").forEach(b => b.addEventListener("click", () => {
+        if (hecha) return; hecha = true;
+        const bien = b.textContent === p[3];
+        if (bien) puntos++;
+        main.querySelectorAll(".opcion").forEach(x => { if (x.textContent === p[3]) x.classList.add("bien"); else if (x === b) x.classList.add("error"); });
+        $("#aviso").textContent = (bien ? "¡Correcto! " : "") + "Se cumplió: " + p[4] + " (" + p[5] + ")";
+        const marca = $("#profq");
+        setTimeout(() => { if ($("#profq") === marca) { k++; pinta(); } }, 2600);
+      }));
+    }
+    pinta();
   }
 
   /* ---------- Juegos de mesa ---------- */
@@ -686,6 +886,9 @@
           <p style="margin:.5em 0 1em">${j.desc}</p>
           ${j.archivo ? `<a class="btn" href="${j.archivo}" download>⬇ Descargar PDF</a>` : `<span class="btn linea">Próximamente</span>`}
         </article>`).join("")}</section>
+      <h2 style="margin-top:24px">🎨 Parashot de Bereshit para colorear y armar</h2>
+      <p class="sub">Cada PDF trae: dibujo para colorear, rompecabezas de 12 piezas para recortar, hoja de la historia para niños y hoja de estudio para jóvenes.</p>
+      <section class="lista-pdf">${PARASHOT.slice(0, 12).map((x, i) => plus(i) ? `<a class="btn linea" href="${pdfParasha(i)}" download>${i + 1}. ${x[1]}</a>` : "").join("")}</section>
       <section class="caja pregunta"><h3>💡 Consejo</h3><p>Imprime en cartulina o pega las hojas sobre cartón para que duren más. Antes de jugar, hagan una tefilá corta y al terminar que cada uno diga algo que aprendió.</p></section>
       ${firma()}`;
   }
@@ -704,8 +907,9 @@
     else if (a === "juegos") juegos();
     else if (a === "juego") ({ trivia, memoria, sopa, ordena, quien, versiculo, libro, oculta, aventura }[b] || juegos)();
     else if (a === "alefbet") alefbet();
-    else if (a === "parasha") parasha();
+    else if (a === "parasha") parasha(b);
     else if (a === "mesa") mesa();
+    else if (a === "profecias") profecias(b);
     else inicio();
     window.scrollTo(0, 0);
   }
