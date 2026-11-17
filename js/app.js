@@ -12,6 +12,8 @@
   };
   let zona = guardado.get("zona", "ninos");
   let estrellas = guardado.get("estrellas", 0);
+  let reloj = null, sensor = null;
+  function quitarSensor() { if (sensor) { window.removeEventListener("deviceorientation", sensor); sensor = null; } }
 
   const mezclar = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const esNino = () => zona === "ninos";
@@ -85,49 +87,159 @@
 
   /* ---------- Juegos ---------- */
   function juegos() {
-    main.innerHTML = `<h1>Juegos</h1><p class="sub">Gana estrellas mientras aprendes.</p>
-      <section class="rejilla ancha">
-        <a class="tarjeta" style="--c:#d81b60" href="#/juego/trivia"><span class="ico">❓</span><strong>Trivia de la Torá</strong><small>8 preguntas</small></a>
-        <a class="tarjeta" style="--c:#1e88e5" href="#/juego/memoria"><span class="ico">🧠</span><strong>Memoria</strong><small>${esNino() ? "Encuentra las parejas" : "Hebreo y su significado"}</small></a>
-        <a class="tarjeta" style="--c:#43a047" href="#/juego/sopa"><span class="ico">🔎</span><strong>Sopa de letras</strong><small>Palabras kadosh</small></a>
-        <a class="tarjeta" style="--c:#8e24aa" href="#/juego/quien"><span class="ico">🎭</span><strong>¿Quién soy?</strong><small>Mímica: el teléfono en la frente</small></a>
-        <a class="tarjeta" style="--c:#f9a825" href="#/juego/ordena"><span class="ico">🔢</span><strong>Ordena la historia</strong><small>¿Qué pasó primero?</small></a>
-      </section>`;
+    const t = (c, r, ico, nom, sub) => `<a class="tarjeta" style="--c:${c}" href="#/juego/${r}"><span class="ico">${ico}</span><strong>${nom}</strong><small>${sub}</small></a>`;
+    const lista = esNino() ? [
+      t("#d81b60", "trivia", "❓", "Trivia de la Torá", "8 preguntas fáciles"),
+      t("#1e88e5", "memoria", "🧠", "Memoria de dibujos", "Encuentra las parejas"),
+      t("#43a047", "sopa", "🔎", "Sopa de letras", "6 palabras"),
+      t("#f9a825", "ordena", "🔢", "Ordena la historia", "¿Qué pasó primero?"),
+      t("#8e24aa", "quien", "🎭", "¿Quién soy?", "Mímica con el teléfono en la frente")
+    ] : [
+      t("#d81b60", "trivia", "⏱️", "Desafío contra reloj", "10 preguntas · 15 segundos cada una"),
+      t("#f9a825", "versiculo", "🧩", "Arma el versículo", "Pon las palabras en orden"),
+      t("#00897b", "libro", "📚", "¿En qué libro está?", "Ubica cada suceso en la Torá"),
+      t("#5e35b1", "oculta", "🕯️", "Palabra oculta", "Descúbrela antes de que se apaguen las luces"),
+      t("#1e88e5", "memoria", "🧠", "Memoria en hebreo", "Palabra hebrea y significado"),
+      t("#43a047", "sopa", "🔎", "Sopa de letras experta", "9 palabras, también en diagonal"),
+      t("#8e24aa", "quien", "🎭", "¿Quién soy?", "28 personajes · mímica en la frente")
+    ];
+    main.innerHTML = `<h1>Juegos ${esNino() ? "para niños" : "para jóvenes"}</h1>
+      <p class="sub">Gana estrellas mientras aprendes. ${esNino() ? "" : "Aquí los retos son más exigentes."}</p>
+      <section class="rejilla ancha">${lista.join("")}</section>`;
   }
   const cabezaJuego = (t) => `<a class="volver" href="#/juegos">← Juegos</a><h1>${t}</h1>`;
 
   function trivia() {
-    const preguntas = mezclar(TRIVIA[zona]).slice(0, 8);
+    clearInterval(reloj);
+    const joven = !esNino(), titulo = joven ? "Desafío contra reloj" : "Trivia de la Torá";
+    const preguntas = mezclar(TRIVIA[zona]).slice(0, joven ? 10 : 8);
     let i = 0, puntos = 0;
     function pinta() {
+      clearInterval(reloj);
       if (i >= preguntas.length) {
-        ganar(puntos);
-        main.innerHTML = `${cabezaJuego("Trivia de la Torá")}<section class="final">
-          <p class="grande">${puntos >= 6 ? "🏆" : "💪"}</p><h2>${puntos} de ${preguntas.length}</h2>
-          <p>${puntos >= 6 ? "¡Kol hakavod! ¡Muy bien!" : "¡Sigue estudiando, vas muy bien!"} Ganaste ${puntos} ⭐</p>
+        const premio = joven ? puntos * 2 : puntos, meta = Math.ceil(preguntas.length * 0.7);
+        ganar(premio);
+        main.innerHTML = `${cabezaJuego(titulo)}<section class="final">
+          <p class="grande">${puntos >= meta ? "🏆" : "💪"}</p><h2>${puntos} de ${preguntas.length}</h2>
+          <p>${puntos >= meta ? "¡Kol hakavod! ¡Muy bien!" : "¡Sigue estudiando, vas muy bien!"} Ganaste ${premio} ⭐</p>
           <p class="fila" style="justify-content:center"><button class="btn" id="otra">Jugar otra vez</button></p></section>`;
         $("#otra").addEventListener("click", trivia);
         return;
       }
       const q = preguntas[i], correcta = q.o[0], ops = mezclar(q.o);
-      main.innerHTML = `${cabezaJuego("Trivia de la Torá")}
+      main.innerHTML = `${cabezaJuego(titulo)}
         <p class="progreso"><i style="width:${(i / preguntas.length) * 100}%"></i></p>
-        <p class="sub">Pregunta ${i + 1} de ${preguntas.length}</p><h2>${q.p}</h2>
+        <p class="sub">Pregunta ${i + 1} de ${preguntas.length}${joven ? ' · <strong class="tiempo">⏱️ <span id="tiempo">15</span> s</strong>' : ""}</p><h2>${q.p}</h2>
         <section class="opciones">${ops.map(o => `<button class="opcion">${o}</button>`).join("")}</section>
         <p class="aviso" id="aviso" aria-live="polite"></p>
         <p class="fila"><button class="btn" id="sig" hidden>Siguiente →</button></p>`;
-      main.querySelectorAll(".opcion").forEach(b => b.addEventListener("click", () => {
+      const responder = (b) => {
         if (!$("#sig").hidden) return;
-        const bien = b.textContent === correcta;
+        clearInterval(reloj);
+        const bien = !!b && b.textContent === correcta;
         if (bien) puntos++;
         main.querySelectorAll(".opcion").forEach(x => {
           if (x.textContent === correcta) x.classList.add("bien");
           else if (x === b) x.classList.add("error");
         });
-        $("#aviso").textContent = (bien ? "¡Correcto! " : "La respuesta es: " + correcta + ". ") + (q.r ? "📖 " + q.r : "");
+        $("#aviso").textContent = (bien ? "¡Correcto! " : (b ? "" : "¡Se acabó el tiempo! ") + "La respuesta es: " + correcta + ". ") + (q.r ? "📖 " + q.r : "");
         $("#sig").hidden = false; $("#sig").focus();
-      }));
+      };
+      main.querySelectorAll(".opcion").forEach(b => b.addEventListener("click", () => responder(b)));
       $("#sig").addEventListener("click", () => { i++; pinta(); });
+      if (joven) {
+        let s = 15;
+        reloj = setInterval(() => {
+          if (!$("#tiempo")) return clearInterval(reloj);
+          s--; $("#tiempo").textContent = s;
+          if (s <= 0) responder(null);
+        }, 1000);
+      }
+    }
+    pinta();
+  }
+
+  /* ---------- Juegos solo para jóvenes ---------- */
+  function versiculo() {
+    const v = VERSOS[Math.floor(Math.random() * VERSOS.length)];
+    let banco = mezclar(v.t.split(" ").map((w, k) => ({ w, k }))), puesto = [], listo = false;
+    function pinta(msg) {
+      main.innerHTML = `${cabezaJuego("Arma el versículo")}
+        <p class="sub">Toca las palabras en orden. Toca una ya puesta para devolverla. <strong>${v.r}</strong></p>
+        <section class="armado" id="armado">${puesto.map((x, n) => `<button class="chip puesta" data-n="${n}" ${listo ? "disabled" : ""}>${x.w}</button>`).join("") || '<span class="sub">Aquí se arma el versículo…</span>'}</section>
+        <section class="banco">${banco.map((x, n) => `<button class="chip" data-n="${n}">${x.w}</button>`).join("")}</section>
+        <p class="aviso" aria-live="polite">${msg || ""}</p>
+        ${listo ? '<p class="fila"><button class="btn oro" id="otra">Otro versículo</button></p>' : ""}`;
+      main.querySelectorAll(".banco .chip").forEach(b => b.addEventListener("click", () => {
+        puesto.push(banco.splice(+b.dataset.n, 1)[0]);
+        if (!banco.length) {
+          if (puesto.map(x => x.w).join(" ") === v.t) { listo = true; ganar(4); return pinta("🎉 ¡Perfecto! +4 ⭐"); }
+          return pinta("Casi… hay palabras fuera de lugar. Toca las que quieras devolver.");
+        }
+        pinta();
+      }));
+      main.querySelectorAll(".armado .chip").forEach(b => b.addEventListener("click", () => {
+        banco.push(puesto.splice(+b.dataset.n, 1)[0]); pinta();
+      }));
+      if (listo) $("#otra").addEventListener("click", versiculo);
+    }
+    pinta();
+  }
+
+  function libro() {
+    const qs = mezclar(LIBROS_Q).slice(0, 8);
+    let i = 0, puntos = 0;
+    function pinta() {
+      if (i >= qs.length) {
+        ganar(puntos);
+        main.innerHTML = `${cabezaJuego("¿En qué libro está?")}<section class="final">
+          <p class="grande">${puntos >= 6 ? "🏆" : "📚"}</p><h2>${puntos} de ${qs.length}</h2><p>Ganaste ${puntos} ⭐</p>
+          <p class="fila" style="justify-content:center"><button class="btn" id="otra">Jugar otra vez</button></p></section>`;
+        $("#otra").addEventListener("click", libro);
+        return;
+      }
+      const [hecho, cual] = qs[i];
+      main.innerHTML = `${cabezaJuego("¿En qué libro está?")}
+        <p class="progreso"><i style="width:${(i / qs.length) * 100}%"></i></p>
+        <p class="sub">Suceso ${i + 1} de ${qs.length}</p><h2 id="hecho">${hecho}</h2>
+        <section class="libros">${LIBROS.map((l, n) => `<button class="opcion" data-n="${n}">${l}</button>`).join("")}</section>
+        <p class="aviso" id="aviso" aria-live="polite"></p>`;
+      let hecha = false;
+      main.querySelectorAll(".libros .opcion").forEach(b => b.addEventListener("click", () => {
+        if (hecha) return; hecha = true;
+        const bien = +b.dataset.n === cual;
+        if (bien) puntos++;
+        main.querySelectorAll(".libros .opcion").forEach(x => {
+          if (+x.dataset.n === cual) x.classList.add("bien"); else if (x === b) x.classList.add("error");
+        });
+        $("#aviso").textContent = bien ? "¡Correcto!" : "Está en " + LIBROS[cual] + ".";
+        const marca = $("#hecho");
+        setTimeout(() => { if ($("#hecho") === marca) { i++; pinta(); } }, 1200);
+      }));
+    }
+    pinta();
+  }
+
+  function oculta() {
+    const [pal, pista] = OCULTAS[Math.floor(Math.random() * OCULTAS.length)];
+    const usadas = new Set(); let luces = 6, fin = "";
+    function pinta() {
+      const gano = pal.split("").every(c => usadas.has(c));
+      if (gano && !fin) { fin = "gano"; ganar(4); }
+      if (luces <= 0 && !fin) fin = "perdio";
+      main.innerHTML = `${cabezaJuego("Palabra oculta")}
+        <p class="sub">Pista: <strong>${pista}</strong></p>
+        <p class="luces" aria-label="Luces: ${luces} de 6">${"🕯️".repeat(luces)}${"▫️".repeat(6 - luces)}</p>
+        <p class="huecos">${pal.split("").map(c => `<span>${usadas.has(c) || fin ? c : "&nbsp;"}</span>`).join("")}</p>
+        <p class="aviso" aria-live="polite">${fin === "gano" ? "🎉 ¡La descubriste! +4 ⭐" : fin === "perdio" ? "Se apagaron las luces. Era: " + pal : ""}</p>
+        ${fin ? '<p class="fila" style="justify-content:center"><button class="btn oro" id="otra">Otra palabra</button></p>'
+          : `<section class="teclado">${"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(c => `<button ${usadas.has(c) ? "disabled" : ""}>${c}</button>`).join("")}</section>`}`;
+      if (fin) return $("#otra").addEventListener("click", oculta);
+      main.querySelectorAll(".teclado button").forEach(b => b.addEventListener("click", () => {
+        const c = b.textContent; usadas.add(c);
+        if (!pal.includes(c)) luces--;
+        pinta();
+      }));
     }
     pinta();
   }
@@ -256,48 +368,97 @@
     pinta(false);
   }
 
-  /* ---------- ¿Quién soy? (mímica) ---------- */
-  let relojQuien = null;
+  /* ---------- ¿Quién soy? (mímica, inclinando el teléfono) ---------- */
   function quien() {
-    clearInterval(relojQuien);
+    clearInterval(reloj); quitarSensor();
     const mazo = mezclar(PERSONAJES.filter(p => esNino() ? p[2] === 1 : true));
-    let i = 0, seg = 60, bien = [], paso = [];
+    let i = 0, seg = 60, bien = [], paso = [], armado = false, pausa = true, audio = null, pantalla = null;
     main.innerHTML = `${cabezaJuego("¿Quién soy?")}
       <ol class="pasos">
-        <li>Un jugador se pone el teléfono en la <strong>frente</strong>, con la pantalla hacia los demás, sin mirar.</li>
-        <li>Los demás hacen la <strong>mímica</strong> del personaje, ¡sin hablar! En pantalla sale una idea para actuar.</li>
-        <li>Si adivina, otro jugador toca <strong>¡Adivinó!</strong> Si no sale, toca <strong>Pasar</strong>.</li>
-        <li>Tienen 60 segundos. Luego le toca a otro.</li>
+        <li>Pon el teléfono en tu <strong>frente</strong>, derecho, con la pantalla hacia los demás. ¡Sin mirar!</li>
+        <li>Los demás hacen la <strong>mímica</strong> del personaje, sin hablar.</li>
+        <li>¿Adivinaste? Inclina el teléfono <strong>hacia abajo</strong> ⬇️ (pantalla mirando al piso). Sale «¡Correcto!» y aparece otro personaje.</li>
+        <li>¿No sabes? Inclínalo <strong>hacia arriba</strong> ⬆️ (pantalla mirando al techo) para cambiarlo.</li>
+        <li>Después de cada movimiento, vuelve el teléfono a la frente. Tienes 60 segundos.</li>
       </ol>
-      <p class="fila"><button class="btn oro" id="ya">¡Empezar!</button></p>`;
-    $("#ya").addEventListener("click", () => {
+      <p class="fila"><button class="btn oro" id="ya">¡Empezar!</button></p>
+      <p class="sub">Si tu teléfono pregunta por el permiso de movimiento, toca «Permitir». Si no tiene sensor, usa los botones de la pantalla.</p>`;
+
+    const sonido = (ok) => {
+      try {
+        if (navigator.vibrate) navigator.vibrate(ok ? 120 : [60, 60, 60]);
+        if (!audio) return;
+        const o = audio.createOscillator(), g = audio.createGain();
+        o.frequency.value = ok ? 880 : 300; g.gain.value = 0.15;
+        o.connect(g); g.connect(audio.destination); o.start(); o.stop(audio.currentTime + (ok ? 0.18 : 0.3));
+      } catch (e) { /* sin sonido */ }
+    };
+    const fin = () => {
+      clearInterval(reloj); quitarSensor();
+      try { if (pantalla) pantalla.release(); } catch (e) { /* nada */ }
+      ganar(bien.length);
+      main.innerHTML = `${cabezaJuego("¿Quién soy?")}<section class="final">
+        <p class="grande">🎭</p><h2>¡Adivinaste ${bien.length}!</h2>
+        <p>${bien.length ? "✅ " + bien.join(", ") : "¡La próxima sale mejor!"}</p>
+        ${paso.length ? `<p class="sub">Pasaron: ${paso.join(", ")}</p>` : ""}
+        <p>Ganaste ${bien.length} ⭐</p>
+        <p class="fila" style="justify-content:center"><button class="btn" id="otra">Siguiente jugador</button></p></section>`;
+      $("#otra").addEventListener("click", quien);
+    };
+    const carta = () => {
+      if (i >= mazo.length) return fin();
+      const f = $(".frente"); if (!f) return;
+      f.className = "frente";
+      $("#nombre").textContent = mazo[i][0];
+      $("#mimica").textContent = "🎭 " + mazo[i][1];
+      pausa = false;
+    };
+    const marcar = (ok) => {
+      if (pausa || !$(".frente")) return;
+      pausa = true; armado = false;
+      (ok ? bien : paso).push(mazo[i][0]);
+      sonido(ok);
+      $(".frente").className = "frente " + (ok ? "acierto" : "cambio");
+      $("#nombre").textContent = ok ? "¡Correcto!" : "Paso";
+      $("#mimica").textContent = ok ? "✅" : "🔄";
+      setTimeout(() => { i++; carta(); }, 900);
+    };
+
+    $("#ya").addEventListener("click", async () => {
+      try { audio = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { audio = null; }
+      try {
+        if (typeof DeviceOrientationEvent !== "undefined" && DeviceOrientationEvent.requestPermission) await DeviceOrientationEvent.requestPermission();
+      } catch (e) { /* se juega con botones */ }
+      try { if (navigator.wakeLock) pantalla = await navigator.wakeLock.request("screen"); } catch (e) { pantalla = null; }
+
       main.innerHTML = `<section class="frente">
           <p class="reloj" id="reloj">60</p>
-          <h1 id="nombre"></h1>
-          <p class="mimica" id="mimica"></p>
-          <p class="fila botones"><button class="btn linea" id="pasar">Pasar</button><button class="btn oro" id="si">¡Adivinó!</button></p>
+          <h1 id="nombre">3</h1>
+          <p class="mimica" id="mimica">¡Ponlo en tu frente!</p>
+          <p class="guia">⬇️ abajo = ¡Correcto! · ⬆️ arriba = cambiar</p>
+          <p class="fila botones"><button class="btn linea" id="pasar">Cambiar</button><button class="btn oro" id="si">¡Adivinó!</button></p>
         </section>`;
-      const carta = () => {
-        if (i >= mazo.length) return fin();
-        $("#nombre").textContent = mazo[i][0];
-        $("#mimica").textContent = "🎭 " + mazo[i][1];
+      $("#si").addEventListener("click", () => marcar(true));
+      $("#pasar").addEventListener("click", () => marcar(false));
+
+      // v = hacia dónde mira la pantalla: 1 techo · 0 al frente · -1 piso (sirve con el teléfono vertical u horizontal)
+      sensor = (e) => {
+        if (e.beta === null || e.gamma === null) return;
+        const g = Math.PI / 180, v = Math.cos(e.beta * g) * Math.cos(e.gamma * g);
+        if (Math.abs(v) < 0.35) { armado = true; return; }
+        if (!armado || pausa) return;
+        if (v < -0.6) marcar(true); else if (v > 0.6) marcar(false);
       };
-      const fin = () => {
-        clearInterval(relojQuien);
-        ganar(bien.length);
-        main.innerHTML = `${cabezaJuego("¿Quién soy?")}<section class="final">
-          <p class="grande">🎭</p><h2>¡Adivinaste ${bien.length}!</h2>
-          <p>${bien.length ? "✅ " + bien.join(", ") : "¡La próxima sale mejor!"}</p>
-          ${paso.length ? `<p class="sub">Pasaron: ${paso.join(", ")}</p>` : ""}
-          <p>Ganaste ${bien.length} ⭐</p>
-          <p class="fila" style="justify-content:center"><button class="btn" id="otra">Siguiente jugador</button></p></section>`;
-        $("#otra").addEventListener("click", quien);
-      };
-      $("#si").addEventListener("click", () => { bien.push(mazo[i][0]); i++; carta(); });
-      $("#pasar").addEventListener("click", () => { paso.push(mazo[i][0]); i++; carta(); });
-      carta();
-      relojQuien = setInterval(() => {
-        if (!$("#reloj")) return clearInterval(relojQuien);
+      window.addEventListener("deviceorientation", sensor);
+
+      let previa = 3;
+      reloj = setInterval(() => {
+        if (!$("#reloj")) { clearInterval(reloj); quitarSensor(); return; }
+        if (previa > 0) {
+          previa--;
+          if (previa > 0) { $("#nombre").textContent = previa; return; }
+          return carta();
+        }
         seg--; $("#reloj").textContent = seg;
         if (seg <= 0) fin();
       }, 1000);
@@ -379,7 +540,7 @@
 
   /* ---------- Rutas ---------- */
   function ruta() {
-    clearInterval(relojQuien);
+    clearInterval(reloj); quitarSensor();
     const partes = location.hash.replace(/^#\/?/, "").split("/");
     const [a, b] = partes;
     document.querySelectorAll(".menu a").forEach(l => {
@@ -389,7 +550,7 @@
     if (a === "historias") historias();
     else if (a === "historia") historia(b);
     else if (a === "juegos") juegos();
-    else if (a === "juego") ({ trivia, memoria, sopa, ordena, quien }[b] || juegos)();
+    else if (a === "juego") ({ trivia, memoria, sopa, ordena, quien, versiculo, libro, oculta }[b] || juegos)();
     else if (a === "alefbet") alefbet();
     else if (a === "parasha") parasha();
     else if (a === "mesa") mesa();

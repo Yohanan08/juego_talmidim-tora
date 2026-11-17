@@ -1,6 +1,6 @@
 /* Service worker — permite usar la app sin internet.
    Cada vez que cambies archivos, sube el número de versión. */
-const VERSION = "talmidim-v2";
+const VERSION = "talmidim-v3";
 const ARCHIVOS = [
   "./", "index.html", "css/styles.css", "js/data.js", "js/app.js", "manifest.json",
   "icons/icon-192.png", "icons/icon-512.png",

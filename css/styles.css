@@ -148,6 +148,27 @@ body[data-zona="ninos"] .historia p { font-size: 1.2rem; }
 .frente .btn { font-size: 1.2rem; padding: 16px 26px; }
 .frente .btn.linea { color: #fff; box-shadow: inset 0 0 0 2px #fff; }
 
+.frente .guia { font-size: .95rem; opacity: .85; margin: 0; }
+.frente.acierto { background: var(--ok); }
+.frente.cambio { background: #e07b00; }
+.frente.acierto .botones, .frente.cambio .botones, .frente.acierto .guia, .frente.cambio .guia { visibility: hidden; }
+
+/* Juegos de jóvenes */
+.tiempo { color: var(--oro); }
+.armado, .banco { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px; border-radius: 16px; min-height: 64px; margin: 12px 0; }
+.armado { background: var(--tarjeta); box-shadow: var(--sombra); border: 2px dashed var(--oro); }
+.banco { background: var(--cielo); }
+.chip { border: 0; border-radius: 99px; padding: 9px 15px; font-weight: 800; background: var(--azul); color: #fff; }
+.chip.puesta { background: var(--oro); color: #222; }
+.libros { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 14px 0; }
+.libros .opcion { text-align: center; }
+.luces { font-size: 1.8rem; text-align: center; letter-spacing: 4px; margin: 8px 0; }
+.huecos { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 14px 0; }
+.huecos span { width: 1.6em; height: 2em; display: grid; place-items: center; border-bottom: 4px solid var(--oro); font-size: clamp(1.1rem, 5vw, 1.8rem); font-weight: 800; }
+.teclado { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; max-width: 460px; margin: 0 auto; }
+.teclado button { border: 0; border-radius: 10px; padding: 12px 0; font-weight: 800; background: var(--tarjeta); color: var(--tinta); box-shadow: var(--sombra); }
+.teclado button:disabled { opacity: .3; box-shadow: none; }
+
 /* Alef-Bet */
 .letras { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; direction: rtl; }
 .letra { direction: ltr; border: 0; background: var(--tarjeta); color: inherit; border-radius: 18px; padding: 10px 6px; box-shadow: var(--sombra); text-align: center; }

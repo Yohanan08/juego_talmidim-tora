@@ -248,6 +248,35 @@ const PERSONAJES = [
   ["Yojanán el Inmersor", "Sumerge a la gente en el río y señala al que viene.", 2]
 ];
 
+/* ---------- ¿En qué libro está? (jóvenes) ---------- */
+const LIBROS = ["Bereshit", "Shemot", "Vayikrá", "Bemidbar", "Devarim"];
+const LIBROS_Q = [
+  ["La creación de los cielos y la tierra", 0], ["Nóaj y la tevá", 0], ["La torre de Bavel", 0],
+  ["Yosef es vendido por sus hermanos", 0], ["El sueño de la escalera de Yaakov", 0], ["Avraham sube al monte Moriyá", 0],
+  ["La zarza ardiente", 1], ["Las diez plagas", 1], ["El cruce del Yam Suf", 1],
+  ["Las Diez Palabras en el Sinaí", 1], ["La construcción del Mishkán", 1], ["El becerro de oro", 1],
+  ["Las instrucciones de Yom Kipur", 2], ["«Amarás a tu prójimo como a ti mismo»", 2], ["El calendario de las Fiestas del Eterno", 2],
+  ["Los animales que son alimento y los que no", 2], ["El año del Yovel", 2],
+  ["Los doce espías", 3], ["La rebelión de Kóraj", 3], ["La serpiente de bronce", 3],
+  ["Bilam y su asna", 3], ["La bendición de los kohanim", 3],
+  ["El Shemá", 4], ["«Escoge la vida»", 4], ["La promesa de un profeta como Moshé", 4],
+  ["El cántico Haazinu", 4], ["Moshé contempla la tierra desde el monte Nebó", 4]
+];
+
+/* ---------- Palabra oculta (jóvenes) ---------- */
+/* [palabra en mayúsculas y sin tildes, pista] */
+const OCULTAS = [
+  ["MASHIAJ", "El Ungido, el Rey prometido a Israel"], ["EMUNA", "Confianza firme en Adonai"],
+  ["MISHKAN", "La morada de Adonai en el desierto"], ["SHAVUOT", "Fiesta al completar la cuenta de cincuenta días"],
+  ["KADOSH", "Apartado para Adonai"], ["TESHUVA", "Volver a Adonai de todo corazón"],
+  ["MENORA", "Candelabro de siete brazos"], ["SHOFAR", "Se hace sonar en Yom Teruá"],
+  ["TEFILA", "Hablar con Adonai"], ["BERAJA", "Bendición"], ["TEVILAH", "Inmersión en agua"],
+  ["YERUSHALAYIM", "La ciudad del gran Rey"], ["BERESHIT", "Primer libro de la Torá"],
+  ["DEVARIM", "Quinto libro de la Torá"], ["TZITZIT", "Flecos que recuerdan las mitzvot"],
+  ["MITZVA", "Mandamiento de Adonai"], ["KOHEN", "Servidor de Adonai en el Mishkán"],
+  ["PESAJ", "Fiesta de la salida de Mitzráyim"], ["SUKOT", "Fiesta de las cabañas"], ["TANAJ", "Torá, Neviim y Ketuvim"]
+];
+
 /* ---------- Alef-Bet ---------- */
 /* [letra, nombre, sonido, palabra hebrea, cómo se dice, significado] */
 const ALEFBET = [
